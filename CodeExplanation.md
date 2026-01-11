@@ -141,5 +141,3 @@ This is a simple "manual DI" approach (lightweight alternative to Hilt).
 - UI feedback uses **Snackbar** so success/failure messages are clear.
 - Camera is treated as **optional** so the app still works on emulators or devices without camera hardware.
 - If you cant boot the camera because of app bailing out you can change the **delayMillis** variable on "CameraCaptureActivity.kt" at row "137"
-Google Drive Link = https://drive.google.com/drive/folders/1LMTSCxYi6bfsrCP-ttUKNv0ytXjlqd7_?usp=sharing
-GitHub link = https://github.com/ikoraycaglar/conferenceapp2
