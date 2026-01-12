@@ -58,6 +58,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import java.io.File
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AdapterView
+import android.widget.Spinner
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.border
 
 private const val CONFERENCE_URL = "https://ankarabilim.edu.tr"
 
@@ -205,33 +211,54 @@ fun RegistrationScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Title "Spinner" (robust implementation: works even if ExposedDropdownMenu is missing)
-            var titleExpanded by remember { mutableStateOf(false) }
-            Box {
-                OutlinedTextField(
-                    value = s.title,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Title") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { titleExpanded = true }
-                )
-                DropdownMenu(
-                    expanded = titleExpanded,
-                    onDismissRequest = { titleExpanded = false }
-                ) {
-                    listOf("Prof", "Dr.", "Student").forEach { t ->
-                        DropdownMenuItem(
-                            text = { Text(t) },
-                            onClick = {
-                                vm.setTitle(t)
-                                titleExpanded = false
+             val titleOptions = listOf("Prof", "Dr.", "Student")
+
+            Text("Title", style = MaterialTheme.typography.labelLarge)
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(horizontal = 12.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                AndroidView(
+                    modifier = Modifier.fillMaxWidth(),
+                    factory = { ctx ->
+                        Spinner(ctx, Spinner.MODE_DROPDOWN).apply {
+                            layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT
+                            )
+
+                            val adapter = ArrayAdapter(
+                                ctx,
+                                android.R.layout.simple_spinner_item,
+                                titleOptions
+                            )
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                            this.adapter = adapter
+
+                            val offsetPx = (12 * ctx.resources.displayMetrics.density).toInt()
+                            dropDownVerticalOffset = offsetPx
+
+                            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                                    val selected = titleOptions[position]
+                                    if (selected != s.title) vm.setTitle(selected)
+                                }
+                                override fun onNothingSelected(parent: AdapterView<*>?) = Unit
                             }
-                        )
+                        }
+                    },
+                    update = { spinner ->
+                        val idx = titleOptions.indexOf(s.title).let { if (it >= 0) it else 0 }
+                        if (spinner.selectedItemPosition != idx) spinner.setSelection(idx, false)
                     }
-                }
+                )
             }
 
             ElevatedCard {
