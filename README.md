@@ -1,7 +1,6 @@
 # Conference App — Code Explanation
 Name : İsmet Koray Çağlar
-ID: 230205027
-Course ID: CENG443
+
 
 
 This project is a small Android app for **conference participant registration + verification**.
